@@ -76,5 +76,55 @@
       <option name="name" value="Elytra" />
       <option name="url" value="http://repo.elytradev.com" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="CleanroomMC Maven" />
+      <option name="name" value="CleanroomMC Maven" />
+      <option name="url" value="https://maven.cleanroommc.com" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="mojang" />
+      <option name="name" value="mojang" />
+      <option name="url" value="https://libraries.minecraft.net" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="log4j2beta9fixed" />
+      <option name="name" value="log4j2beta9fixed" />
+      <option name="url" value="https://files.prismlauncher.org/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="forge" />
+      <option name="name" value="forge" />
+      <option name="url" value="https://maven.minecraftforge.net" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="sponge" />
+      <option name="name" value="sponge" />
+      <option name="url" value="https://repo.spongepowered.org/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="SpongePowered Maven" />
+      <option name="name" value="SpongePowered Maven" />
+      <option name="url" value="https://repo.spongepowered.org/maven" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="CoFH Maven" />
+      <option name="name" value="CoFH Maven" />
+      <option name="url" value="https://maven.covers1624.net" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Elytra" />
+      <option name="name" value="Elytra" />
+      <option name="url" value="https://repo.elytradev.com" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="DVS1 Maven" />
+      <option name="name" value="DVS1 Maven" />
+      <option name="url" value="https://dvs1.progwml6.com/files/maven" />
+    </remote-repository>
   </component>
 </project>

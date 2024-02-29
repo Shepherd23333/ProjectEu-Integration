@@ -1,99 +1,185 @@
-buildscript {
-    repositories {
-        maven { url = "https://maven.minecraftforge.net/" }
-        maven { url = "https://files.minecraftforge.net/maven" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
-    }
-}
+import org.jetbrains.gradle.ext.Gradle
 
 plugins {
-    id "com.matthewprenger.cursegradle" version "1.4.0"
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+    id 'eclipse'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.3.27'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'idea'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = project.archives_base_name
 
-version = "${mod_version}"
-if (System.getenv('GITHUB_ACTIONS') != null && System.getenv('GITHUB_EVENT_NAME') != 'release') {
-    version += "+${System.getenv('GITHUB_SHA').substring(0, 7)}"
-}
-
-group = 'com.tagnumelite.projecteintegration'
-archivesBaseName = "ProjectE-Integration-${mc_version}"
-
-def apiProject = project(":Api")
+def apiProject = project(':Api')
 def plugins = gradle.ext.pei_plugins
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+// Set the toolchain version to decouple the Java we run Gradle with from the Java used to compile and run the mod
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        // Azul covers the most platforms for Java 8 toolchains, crucially including MacOS arm64
+        vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.AZUL)
+    }
+    // Generate sources and javadocs jars when building and publishing
+    withSourcesJar()
+    // withJavadocJar()
+}
 subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
 
-compileJava.options.encoding = 'UTF-8'
-tasks.withType(JavaCompile) {
-    options.fork = true
-    options.incremental = true
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+configurations {
+    embed
+    implementation.extendsFrom(embed)
+}
+
 minecraft {
-    mappings channel: 'snapshot', version: "${mcp_version}"
+    mcVersion = '1.12.2'
 
-    runs {
-        client {
-            workingDirectory project.file('run')
+    // MCP Mappings
+    mcpMappingChannel = 'stable'
+    mcpMappingVersion = '39'
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+    // Set username here, the UUID will be looked up automatically
+    username = 'Developer'
 
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
+    // Add any additional tweaker classes here
+    // extraTweakClasses.add('org.spongepowered.asm.launch.MixinTweaker')
+
+    // Add various JVM arguments here for runtime
+    def args = ["-ea:${project.group}"]
+    if (project.use_coremod.toBoolean()) {
+        args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
+    }
+    if (project.use_mixins.toBoolean()) {
+        args << '-Dmixin.hotSwap=true'
+        args << '-Dmixin.checks.interfaces=true'
+        args << '-Dmixin.debug=true'
+    }
+    extraRunJvmArguments.addAll(args)
+
+    // Include and use dependencies' Access Transformer files
+    useDependencyAccessTransformers = true
+
+    // Add any properties you want to swap out for a dynamic value at build time here
+    // Any properties here will be added to a class at build time, the name can be configured below
+    // Example:
+    injectedTags.put('VERSION', project.version)
+    // injectedTags.put('MOD_ID', project.archives_base_name)
+}
+
+// Generate a group.archives_base_name.Tags class
+tasks.injectTags.configure {
+    // Change Tags class' name here:
+    outputClassName.set("${project.group}.projecteintegration.Tags")
+}
+
+allprojects {
+    repositories {
+        flatDir {
+            dirs 'libs'
         }
+    }
+}
 
-        server {
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+repositories {
+    maven {
+        name 'CleanroomMC Maven'
+        url 'https://maven.cleanroommc.com'
+    }
+    maven {
+        name 'SpongePowered Maven'
+        url 'https://repo.spongepowered.org/maven'
+    }
+    maven {
+        name 'CurseMaven'
+        url 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven {
+        name 'BlameJared'
+        url 'https://maven.blamejared.com'
+    }
+    maven {
+        name 'CoFH Maven'
+        url 'https://maven.covers1624.net'
+    }
+    mavenLocal() // Must be last for caching to work
+}
 
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
+dependencies {
+    if (project.use_assetmover.toBoolean()) {
+        implementation 'com.cleanroommc:assetmover:2.5'
+    }
+    if (project.use_mixins.toBoolean()) {
+        implementation 'zone.rong:mixinbooter:8.9'
+    }
+
+    implementation apiProject
+    implementation fileTree(dir: 'libs', includes: ['*.jar'])
+    compileOnly rfg.deobf("CraftTweaker2:CraftTweaker2-API:1.12-${version_crt}")
+    compileOnly rfg.deobf("CraftTweaker2:ZenScript:1.12-${version_crt}")
+    compileOnly rfg.deobf("CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crt}")
+
+    runtimeOnly rfg.deobf("curse.maven:had-enough-items-557549:${curse_hei}")
+    runtimeOnly rfg.deobf("curse.maven:Mekanism-268560:${curse_mekanism}")
+
+    if (project.use_mixins.toBoolean()) {
+        // Change your mixins refmap name here:
+        String mixin = modUtils.enableMixins('zone.rong:mixinbooter:8.9', "projecteintegration.refmap.json")
+        api(mixin) {
+            transitive = false
+        }
+        annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
+        annotationProcessor 'com.google.guava:guava:24.1.1-jre'
+        annotationProcessor 'com.google.code.gson:gson:2.8.6'
+        annotationProcessor(mixin) {
+            transitive = false
+        }
+    }
+
+}
+
+// Adds Access Transformer files to tasks
+if (project.use_access_transformer.toBoolean()) {
+    for (File at : sourceSets.getByName("main").resources.files) {
+        if (at.name.toLowerCase().endsWith("_at.cfg")) {
+            tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+            tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
         }
     }
 }
 
 processResources {
+    // This will ensure that this task is redone when the versions change
     inputs.property 'version', project.version
-    inputs.property 'mcversion', project.mc_version
+    inputs.property 'mcversion', project.minecraft.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        expand 'version': project.version, 'mcversion': project.mc_version
+    // Replace various properties in mcmod.info and pack.mcmeta if applicable
+    filesMatching(['mcmod.info', 'pack.mcmeta']) { fcd ->
+        // Replace version and mcversion
+        fcd.expand(
+                'version': project.version,
+                'mcversion': project.minecraft.version
+        )
     }
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    if (project.use_access_transformer.toBoolean()) {
+        rename '(.+_at.cfg)', 'META-INF/$1' // Make sure Access Transformer files are in META-INF folder
     }
-}
-
-repositories {
-    maven { name 'CurseMaven'; url 'https://cursemaven.com' }
-    maven { name 'BlameJared'; url 'https://maven.blamejared.com' }
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compile apiProject
-
-    compile fg.deobf("curse.maven:ProjectE-226410:${curse_projecte}")
-    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:${version_crafttweaker}:deobf"
-    //runtimeOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:${version_crafttweaker}"
 }
 
 jar {
-    dependsOn apiProject.tasks['classes']
+    dependsOn apiProject.tasks.named('classes')
     from sourceSets.main.output.classesDirs
     from apiProject.sourceSets.main.output.classesDirs
     from sourceSets.main.output.resourcesDir
@@ -101,152 +187,79 @@ jar {
 
     plugins.each { plugin ->
         def pProject = project("Plugins:${plugin}")
-        dependsOn pProject.tasks['classes']
-        from pProject.sourceSets.main.output.classesDir
+        dependsOn pProject.tasks.named('classes')
+        from pProject.sourceSets.main.output.classesDirs
         from pProject.sourceSets.main.output.resourcesDir
     }
 
     manifest {
-        attributes([
-            "Specification-Title": "projecteintegration",
-            "Specification-Vendor": "TagnumElite",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"TagnumElite",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
+        def attribute_map = [:]
+        if (project.use_coremod.toBoolean()) {
+            attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
+            if (project.include_mod.toBoolean()) {
+                attribute_map['FMLCorePluginContainsFMLMod'] = true
+                attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
+            }
+        }
+        if (project.use_access_transformer.toBoolean()) {
+            attribute_map['FMLAT'] = project.archives_base_name + '_at.cfg'
+        }
+        attributes(attribute_map)
+    }
+    // Add all embedded dependencies into the jar
+    from(provider { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) } })
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+    project {
+        settings {
+            runConfigurations {
+                "1. Run Client"(Gradle) {
+                    taskNames = ["runClient"]
+                }
+                "2. Run Server"(Gradle) {
+                    taskNames = ["runServer"]
+                }
+                "3. Run Obfuscated Client"(Gradle) {
+                    taskNames = ["runObfClient"]
+                }
+                "4. Run Obfuscated Server"(Gradle) {
+                    taskNames = ["runObfServer"]
+                }
+            }
+            compiler.javac {
+                afterEvaluate {
+                    javacAdditionalOptions = "-encoding utf8"
+                    moduleJavacAdditionalOptions = [
+                            (project.name + ".main"): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
+                    ]
+                }
+            }
+        }
     }
 }
 
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
+tasks.named("processIdeaSettings").configure {
+    dependsOn("injectTags")
 }
 
-task javadocJar(type: Jar, dependsOn: ":Api:javadoc") {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-    from apiProject.javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: plugins.collect{ "Plugins:${it}:compileJava"}) {
-    classifier = "sources"
+tasks.named("sourcesJar").configure {
+    dependsOn(plugins.collect { "Plugins:${it}:compileJava" })
+    //classifier = "sources"
     from sourceSets.main.allJava
     from apiProject.sourceSets.main.allJava
     from files(plugins.collect { project("Plugins:${it}").sourceSets.main.output })
 }
 
 task apiJar(type: Jar) {
-    classifier = "api"
+    //classifier = "api"
     from apiProject.sourceSets.main.output
 }
 
 artifacts {
-    archives javadocJar
     archives sourcesJar
     archives apiJar
-}
-
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
-//jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-publish.dependsOn('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            artifact javadocJar
-            artifact sourcesJar
-            artifact apiJar
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
-
-if (System.env.CURSEFORGE_API_KEY) {
-    curseforge {
-        apiKey = System.env.CURSEFORGE_API_KEY != null ? System.env.CURSEFORGE_API_KEY : '0'
-        project {
-            id = "${cf_project_id}"
-            releaseType = "${release_type}"
-            addGameVersion "${mc_version}"
-
-            mainArtifact(jar) { displayName = "ProjectEIntegration-${mc_version}-${version}" }
-            addArtifact(apiJar) { displayName = "ProjectEIntegration-${mc_version}-${version}-api" }
-            addArtifact(deobfJar) { displayName = "ProjectEIntegration-${mc_version}-${version}-deobf" }
-            addArtifact(javadocJar) { displayName = "ProjectEIntegration-${mc_version}-${version}-javadoc" }
-            addArtifact(sourcesJar) { displayName = "ProjectEIntegration-${mc_version}-${version}-sources" }
-
-            relations {
-                requiredDependency 'ProjectE'
-
-                // ProjectE-Integration Compact
-                optionalDependency 'CraftTweaker'
-
-                // Crafting Plugins
-                optionalDependency 'ArmorPlus'
-                optionalDependency 'Artisan-Worktables'
-                optionalDependency 'Chisel'
-                optionalDependency 'Extended-Crafting'
-                optionalDependency 'Modular-Machinery'
-
-                // Duplicate Plugins
-
-                // Legacy Plugins
-                //optionalDependency 'IC2Classic'
-                optionalDependency 'NuclearCraft-mod'
-
-                // Library Plugins
-                optionalDependency 'Charset-Lib'
-                optionalDependency 'LibVulpes'
-                optionalDependency 'RebornCore'
-                optionalDependency 'Sonar-Core'
-
-                // Magic Plugins
-                optionalDependency 'Astral-Sorcery'
-                optionalDependency 'Blood-Magic'
-                optionalDependency 'Botania'
-                optionalDependency 'Embers'
-                optionalDependency 'Embers-Rekindled' //The embers plugin supports both
-                optionalDependency 'ExtraBotany'
-                optionalDependency 'Mystical-Agriculture'
-                optionalDependency 'Psi'
-                optionalDependency 'Thaumcraft'
-
-                // Misc Plugins
-                optionalDependency 'Avaritia-1-10'
-                optionalDependency 'Pams-HarvestCraft'
-                optionalDependency 'Security-Craft'
-                optionalDependency 'Tinkers-Construct'
-                optionalDependency 'Woot'
-
-                // Rocketry Plugins
-                optionalDependency 'Advanced-Rocketry'
-
-                // Tech Plugins
-                optionalDependency 'Actually-Additions'
-                optionalDependency 'Applied-Energistics-2'
-                optionalDependency 'Calculator'
-                optionalDependency 'Compact-Machines'
-                optionalDependency 'Draconic-Evolution'
-                optionalDependency 'Ender-IO'
-                optionalDependency 'Extra-Utilities'
-                optionalDependency 'Forestry'
-                optionalDependency 'GregTechCE'
-                optionalDependency 'Immersive-Engineering'
-                optionalDependency 'Industrial-Craft'
-                optionalDependency 'Mekanism'
-                optionalDependency 'NuclearCraft-Overhauled'
-                optionalDependency 'PneumaticCraft-Repressurized'
-                optionalDependency 'TechReborn'
-                optionalDependency 'Thermal-Expansion'
-            }
-        }
-    }
 }

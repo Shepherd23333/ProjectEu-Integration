@@ -1,16 +1,9 @@
-repositories {
-    maven {
-        name = 'Elytra'
-        url = 'http://repo.elytradev.com'
-    }
-}
-
 dependencies {
     // CurseMaven
-    implementation fg.deobf("curse.maven:LibVulpes-236541:${curse_libvulpes}")
-    implementation fg.deobf("curse.maven:SonarCore-239418:${curse_sonarcore}")
-    implementation fg.deobf("curse.maven:RebornCore-237903:${curse_reborncore}")
+    implementation rfg.deobf("curse.maven:LibVulpes-236541:${curse_libvulpes}")
+    implementation rfg.deobf("curse.maven:SonarCore-239418:${curse_sonarcore}")
+    implementation rfg.deobf("curse.maven:RebornCore-237903:${curse_reborncore}")
 
     // Elytra
-    implementation fg.deobf("pl.asie.charset:charset:${version_charset}:full")
+    implementation rfg.deobf("pl.asie.charset:charset:${version_charset}:full")
 }

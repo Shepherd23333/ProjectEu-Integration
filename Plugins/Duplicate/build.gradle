@@ -1,4 +1,4 @@
 dependencies {
     // CurseMaven
-    implementation fg.deobf("curse.maven:GregTechCEU-557242:${curse_gregtechceu}")
+    implementation rfg.deobf("curse.maven:GregTechCEU-557242:${curse_gregtechceu}")
 }

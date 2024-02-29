@@ -1,21 +1,7 @@
-repositories {
-    //ivy {
-    //    name = "MicDoodle CI"
-    //    artifactPattern "https://ci.micdoodle8.com/job/Galacticraft-1.12/174/artifact/Forge/build/libs/[module]-[revision].[ext]"
-    //}
-}
-
 dependencies {
-    compile(project(':Plugins:Library'))
-    implementation files("libs/MicdoodleCore-1.12.2-4.0.2.280.jar")
-    implementation files("libs/GalacticraftCore-1.12.2-4.0.2.280.jar")
-    implementation files("libs/Galacticraft-Planets-1.12.2-4.0.2.280.jar")
+    implementation project(':Plugins:Library')
 
     // CurseMaven
-    implementation fg.deobf("curse.maven:AdvancedRocketry-236542:${curse_advancedrocketry}")
-
-    // MicDoodle CI
-    //deobf name: 'Galacticraft-Planets', version: "${mc_version}-${version_galacticraft}", ext: 'jar'
-    //deobf name: 'GalacticraftCore', version: "${mc_version}-${version_galacticraft}", ext: 'jar'
-    //deobf name: 'MicdoodleCore', version: "${mc_version}-${version_galacticraft}", ext: 'jar'
+    implementation rfg.deobf("curse.maven:AdvancedRocketry-236542:${curse_advancedrocketry}")
+    implementation rfg.deobf("curse.maven:galacticraft-legacy-564236:${curse_galacticraft}")
 }

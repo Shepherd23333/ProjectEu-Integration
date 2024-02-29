@@ -1,0 +1,14 @@
+{
+  "package": "me.shepherd23333.projecteintegration.plugins.tech.mixins",
+  "refmap": "projecteintegration.refmap.json",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "required": true,
+  "mixins": [
+    "MixinExUCrusher",
+    "MixinExUEnchanter"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
