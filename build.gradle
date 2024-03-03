@@ -252,6 +252,7 @@ tasks.named("sourcesJar").configure {
     from sourceSets.main.allJava
     from apiProject.sourceSets.main.allJava
     from files(plugins.collect { project("Plugins:${it}").sourceSets.main.output })
+    duplicatesStrategy 'exclude'
 }
 
 task apiJar(type: Jar) {

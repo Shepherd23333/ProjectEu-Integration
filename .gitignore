@@ -279,6 +279,7 @@ gradle-app.setting
 *.jks
 .idea/jenkinsSettings.xml
 .idea/discord.xml
-.idea/modules/Plugins/*/ProjectE-Integration.Plugins.*.test.iml
+.idea/modules/Plugins/*/ProjectEu-Integration.Plugins.*.test.iml
 .idea/runConfigurations/run*.xml
 !**/libs/*.jar
+/libs/
