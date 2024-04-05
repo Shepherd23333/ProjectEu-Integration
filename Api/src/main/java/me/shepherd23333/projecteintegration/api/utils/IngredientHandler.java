@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -97,9 +97,9 @@ public final class IngredientHandler {
      */
     public boolean addAll(Object[] ingredients) {
         boolean result = true;
-        for (Object ingredient : ingredients) {
-            if (!add(ingredient)) result = false;
-        }
+        for (Object ingredient : ingredients)
+            if (!add(ingredient))
+                result = false;
         return result;
     }
 
@@ -119,9 +119,11 @@ public final class IngredientHandler {
             // Lists are handled differently
             List<?> list = (List<?>) ingredient;
             // If list is empty, just return false
-            if (list.isEmpty()) return false;
+            if (list.isEmpty())
+                return false;
             // There is only one item in the list, just return that
-            if (list.size() == 1) return add(list.get(0));
+            if (list.size() == 1)
+                return add(list.get(0));
             if (list instanceof InputList) {
                 // List is InputList, that means it is a list of potential inputs for a single object
                 object = new SizedObject<>(1, PEIApi.getList(list));

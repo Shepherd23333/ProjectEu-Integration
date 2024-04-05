@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableMap;
 import me.shepherd23333.projecte.api.ProjectEAPI;
 import me.shepherd23333.projecte.api.proxy.IConversionProxy;
 import me.shepherd23333.projecte.api.proxy.IEMCProxy;
+import me.shepherd23333.projecteintegration.Tags;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
@@ -54,7 +55,7 @@ public class PEIApi {
     public static final String APIID = MODID + "api";
     public static final Logger LOGGER = LogManager.getLogger(APIID);
     public static final String NAME = "ProjectEu Integration";
-    public static final String VERSION = "4.0.0";
+    public static final String VERSION = Tags.VERSION;
     public static final String UPDATE_JSON = "";
     public static final IEMCProxy emc_proxy = ProjectEAPI.getEMCProxy();
     private static final Map<Ingredient, Object> INGREDIENT_CACHE = new HashMap<>();

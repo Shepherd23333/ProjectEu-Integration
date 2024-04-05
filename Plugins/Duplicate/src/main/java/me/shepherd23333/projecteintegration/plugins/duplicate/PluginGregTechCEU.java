@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,9 @@ package me.shepherd23333.projecteintegration.plugins.duplicate;
 
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
+import gregtech.api.recipes.chance.output.ChancedOutputLogic;
+import gregtech.api.recipes.chance.output.impl.ChancedFluidOutput;
+import gregtech.api.recipes.chance.output.impl.ChancedItemOutput;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
@@ -32,11 +35,12 @@ import me.shepherd23333.projecteintegration.api.plugin.OnlyIf;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 
 @PEIPlugin("gregtech")
-@OnlyIf(version = "[2.0")
+@OnlyIf(version = "[2.8,)")
 public class PluginGregTechCEU extends APEIPlugin {
     @Override
     public void setup() {
@@ -47,6 +51,7 @@ public class PluginGregTechCEU extends APEIPlugin {
 
     private static class RecipeMapper extends PEIMapper {
         private final RecipeMap<?> map;
+        private int maxChance = ChancedOutputLogic.getMaxChancedValue();
 
         public RecipeMapper(RecipeMap<?> map) {
             super(map.unlocalizedName);
@@ -67,13 +72,21 @@ public class PluginGregTechCEU extends APEIPlugin {
                 ArrayList<Object> outputs = new ArrayList<>(recipe.getOutputs());
                 outputs.addAll(recipe.getFluidOutputs());
 
-                for (Recipe.ChanceEntry output : recipe.getChancedOutputs()) {
-                    if (output.getChance() >= 20000) {
-                        ItemStack item = output.getItemStack().copy();
-                        item.setCount(item.getCount() * 2);
+                for (ChancedItemOutput output : recipe.getChancedOutputs().getChancedEntries()) {
+                    int mult = output.getChance() / maxChance;
+                    if (mult > 0) {
+                        ItemStack item = output.getIngredient().copy();
+                        item.setCount(item.getCount() * mult);
                         outputs.add(item);
-                    } else if (output.getChance() >= 10000) {
-                        outputs.add(output.getItemStack());
+                    }
+                }
+
+                for (ChancedFluidOutput output : recipe.getChancedFluidOutputs().getChancedEntries()) {
+                    int mult = output.getChance() / maxChance;
+                    if (mult > 0) {
+                        FluidStack fluid = output.getIngredient().copy();
+                        fluid.amount *= mult;
+                        outputs.add(fluid);
                     }
                 }
 

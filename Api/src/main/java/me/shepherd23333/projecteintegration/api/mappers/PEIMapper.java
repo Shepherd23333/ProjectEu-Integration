@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
 import me.shepherd23333.projecteintegration.api.utils.IngredientHandler;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -39,7 +40,6 @@ import org.apache.commons.lang3.ClassUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -50,6 +50,7 @@ public abstract class PEIMapper {
     public final String desc;
     public final boolean disabled_by_default;
     public final double eps = 1e-6;
+    public final ItemStack cobble = new ItemStack(Blocks.COBBLESTONE);
     protected final IConversionProxy conversion_proxy;
 
     /**
@@ -239,7 +240,7 @@ public abstract class PEIMapper {
             PEIApi.LOGGER.warn("Multi-Output: Empty outputs");
             return;
         } else if (outputs.size() == 1) {
-            Entry<Object, Integer> out = outputs.entrySet().iterator().next();
+            Map.Entry<Object, Integer> out = outputs.entrySet().iterator().next();
             addConversion(out.getValue(), out.getKey(), inputs);
             PEIApi.debugLog("Multi-Output: Only one output {}*{}", out.getKey(), out.getValue());
             return;
@@ -252,7 +253,7 @@ public abstract class PEIMapper {
         Object obj = new Object();
         addConversion(output_count, obj, inputs);
 
-        for (Entry<Object, Integer> out : outputs.entrySet()) {
+        for (Map.Entry<Object, Integer> out : outputs.entrySet()) {
             HashMap<Object, Integer> ing = new HashMap<>();
             ing.put(obj, out.getValue());
             PEIApi.debugLog("Adding multi-output: {}*{}", out.getKey(), out.getValue());

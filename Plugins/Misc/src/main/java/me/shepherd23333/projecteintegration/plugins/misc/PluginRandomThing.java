@@ -19,39 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package me.shepherd23333.projecteintegration.plugins.magic;
 
-import com.blakebr0.mysticalagriculture.crafting.ReprocessorManager;
-import com.blakebr0.mysticalagriculture.crafting.ReprocessorRecipe;
-import com.blakebr0.mysticalagriculture.items.ItemChunk;
-import com.blakebr0.mysticalagriculture.items.ModItems;
+package me.shepherd23333.projecteintegration.plugins.misc;
+
+import lumien.randomthings.block.ModBlocks;
+import lumien.randomthings.item.ModItems;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 
-@PEIPlugin("mysticalagriculture")
-public class PluginMysticalAgriculture extends APEIPlugin {
+@PEIPlugin("randomthings")
+public class PluginRandomThing extends APEIPlugin {
     @Override
-    public void setup() {
-        addEMC("essenceInferium", 32);
-        addEMC("essenceSupremium", 32 * 256);
-        addEMC("shardProsperity", 64);
-        addEMC(ModItems.itemFertilizedEssence, 96);
-        addEMC(ItemChunk.itemTier1MobChunk, 1024);
+    public void setup() throws Exception {
+        addEMC(new ItemStack(ModItems.ingredients, 1, 2), 64);
+        addEMC(ModItems.beans, 64);
+        addEMC(ModItems.summoningPendulum, 16384);
+        addEMC(ModItems.biomeCrystal, 16384);
 
-        addMapper(new SeedProcessorMapper());
+        addMapper(new misc());
     }
 
-    private static class SeedProcessorMapper extends PEIMapper {
-        public SeedProcessorMapper() {
-            super("Seed Processor");
+    private static class misc extends PEIMapper {
+        public misc() {
+            super("Misc", "Add support for resources");
         }
 
         @Override
         public void setup() {
-            for (ReprocessorRecipe recipe : ReprocessorManager.getRecipes()) {
-                addRecipe(recipe.getOutput(), recipe.getInput()); //TODO: Improve, to support ore dict and other
-            }
+            addRecipe(new ItemStack(ModBlocks.glowingMushroom), new ItemStack(Items.GLOWSTONE_DUST));
         }
     }
 }

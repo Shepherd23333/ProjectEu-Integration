@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -309,7 +309,8 @@ public class PluginMekanism extends APEIPlugin {
         }
 
         protected void addRecipe(GasStack output, Object... inputs) {
-            if (!GAS_MAP.containsKey(output.getGas())) return;
+            if (!GAS_MAP.containsKey(output.getGas()))
+                return;
             addRecipe(output.amount, GAS_MAP.get(output.getGas()), inputs);
         }
 
@@ -330,7 +331,8 @@ public class PluginMekanism extends APEIPlugin {
         }
 
         protected void addConversion(GasStack gas, Map<Object, Integer> map) {
-            if (!GAS_MAP.containsKey(gas.getGas())) return;
+            if (!GAS_MAP.containsKey(gas.getGas()))
+                return;
             addConversion(gas.amount, GAS_MAP.get(gas.getGas()), map);
         }
     }
@@ -453,12 +455,11 @@ public class PluginMekanism extends APEIPlugin {
 
         @Override
         public void setup() {
-            for (Gas gas : GasRegistry.getRegisteredGasses()) {
+            for (Gas gas : GasRegistry.getRegisteredGasses())
                 if (gas.hasFluid() && GAS_MAP.containsKey(gas)) {
                     addConversion(new GasStack(gas, 1), ImmutableMap.of(gas.getFluid(), 1));
                     addConversion(new FluidStack(gas.getFluid(), 1), ImmutableMap.of(GAS_MAP.get(gas), 1));
                 }
-            }
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 
 @PEIPlugin("gregtech")
-@OnlyIf(version = "[,2.0)")
+@OnlyIf(version = "(,2.0)")
 public class PluginGregTechCE extends APEIPlugin {
     @Override
     public void setup() {

@@ -12,6 +12,7 @@ repositories {
 dependencies {
     // CurseMaven
     implementation rfg.deobf("curse.maven:BloodMagic-224791:${curse_bloodmagic}")
+    implementation rfg.deobf("curse.maven:Croparia-250235:${curse_croparia}")
     implementation rfg.deobf("curse.maven:embers-251918:${curse_embers}")
     implementation rfg.deobf("curse.maven:ExtraBotany-299086:${curse_extrabotany}")
     implementation rfg.deobf("curse.maven:cucumber-272335:${curse_cucumber}")

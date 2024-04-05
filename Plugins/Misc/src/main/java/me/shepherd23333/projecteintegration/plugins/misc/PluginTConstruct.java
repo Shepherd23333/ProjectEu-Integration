@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,13 @@ import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import slimeknights.tconstruct.gadgets.TinkerGadgets;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.smeltery.CastingRecipe;
 import slimeknights.tconstruct.library.smeltery.ICastingRecipe;
 import slimeknights.tconstruct.library.smeltery.MeltingRecipe;
+import slimeknights.tconstruct.library.tinkering.MaterialItem;
 import slimeknights.tconstruct.library.tools.IToolPart;
-import slimeknights.tconstruct.library.tools.ToolPart;
 import slimeknights.tconstruct.shared.TinkerCommons;
 
 import java.util.ArrayList;
@@ -47,14 +48,11 @@ public class PluginTConstruct extends APEIPlugin {
     @Override
     public void setup() {
         String[] names = {
-                "shard", "sharpening_kit",/*"pick_head","shovel_head","axe_head","broad_axe_head","sword_blade",
-                "large_sword_blade","hammer_head","excavator_head","kama_head","scythe_head","pan_head","sign_head",
-                "tool_rod","tough_tool_rod","binding","tough_binding","wide_guard","hand_guard","cross_guard",
-                "large_plate","knife_blade","bow_limb","bow_string","arrow_head","arrow_shaft","fletching",*/
-                "bolt_core"
+                "shard", "sharpening_kit", "bolt_core"
         };
         for (IToolPart itp : TinkerRegistry.getToolParts())
-            blacklist.add(((ToolPart) itp).getRegistryName());
+            if (itp instanceof MaterialItem)
+                blacklist.add(((MaterialItem) itp).getRegistryName());
         for (String name : names)
             blacklist.add(new ResourceLocation("tconstruct", name));
         blacklist.add(new ResourceLocation("tconevo:part_arcane_focus"));
@@ -62,6 +60,8 @@ public class PluginTConstruct extends APEIPlugin {
         addEMC("boneWithered", 288);
         addEMC(TinkerCommons.matMendingMoss, 10);
         addEMC("blockSlimeDirt", 1);
+        addEMC(TinkerGadgets.spaghetti, 1024);
+        addEMC(TinkerCommons.bacon, 128);
 
         addMapper(new AlloyMapper());
         addMapper(new CastingMapper(CastingMapper.CastingType.BASIN));

@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Api/GitHub.ProjectEu-Integration.Api.iml" filepath="$PROJECT_DIR$/.idea/modules/Api/GitHub.ProjectEu-Integration.Api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.iml" filepath="$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.api.iml" filepath="$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.ideVirtualMain.iml" filepath="$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.ideVirtualMain.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Api/ProjectEu-Integration.Api.main.iml" />
@@ -49,6 +48,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.ideVirtualMain.iml" filepath="$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.ideVirtualMain.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Plugins/Tech/ProjectEu-Integration.Plugins.Tech.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.api.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.ideVirtualMain.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.ideVirtualMain.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjectEu-Integration.test.iml" />

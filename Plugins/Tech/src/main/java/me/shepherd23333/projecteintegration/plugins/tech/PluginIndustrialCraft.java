@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,18 @@ package me.shepherd23333.projecteintegration.plugins.tech;
 
 import com.google.common.collect.ImmutableMap;
 import ic2.api.recipe.*;
+import ic2.core.init.MainConfig;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
 import ic2.core.ref.FluidName;
 import ic2.core.ref.ItemName;
+import ic2.core.util.ConfigUtil;
 import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.OnlyIf;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -50,13 +53,15 @@ import java.util.function.Function;
 @PEIPlugin("ic2")
 @OnlyIf(versionEndsWith = "-ex112")
 public class PluginIndustrialCraft extends APEIPlugin {
+    public static final float uuFactor = ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor");
     private static Function<String, Item> find = reg -> ForgeRegistries.ITEMS.getValue(new ResourceLocation("ic2", reg));
-    static Item resourceBlock = find.apply("resource");
-    static Item nuclear = find.apply("nuclear");
+    static Item crops = find.apply("crop_res");
     static Item dust = find.apply("dust");
+    static Item misc_resource = find.apply("misc_resource");
+    static Item nuclear = find.apply("nuclear");
+    static Item resourceBlock = find.apply("resource");
     static Item scaffold = find.apply("scaffold");
     static Item wall = find.apply("wall");
-    Item misc_resource = find.apply("misc_resource");
 
     @Override
     public void setup() {
@@ -78,15 +83,25 @@ public class PluginIndustrialCraft extends APEIPlugin {
         addMapper(new misc());
         addMapper(new ElectrolyzerMapper());
         addMapper(new FermenterMapper());
+        addMapper(new UUMapper());
     }
 
     private static class misc extends PEIMapper {
         public misc() {
-            super("Misc");
+            super("Misc", "Add support for resouces and in-world crafting");
         }
 
         @Override
         public void setup() {
+            ItemStack crop = new ItemStack(Items.CARROT);
+            addRecipe(new ItemStack(crops, 1, 0), crop);
+            addRecipe(new ItemStack(crops, 1, 4), crop);
+            addRecipe(new ItemStack(crops, 1, 5), crop);
+            addRecipe(new ItemStack(crops, 1, 6), crop);
+            addRecipe(new ItemStack(crops, 1, 7), crop);
+            addRecipe(new ItemStack(crops, 1, 8), crop);
+            addRecipe(new ItemStack(find.apply("terra_wart")), crop);
+
             Fluid cf = FluidName.construction_foam.getInstance();
             addRecipe(new ItemStack(resourceBlock, 1, 11),
                     new ItemStack(scaffold, 1, 2), new FluidStack(cf, 100)
@@ -215,8 +230,6 @@ public class PluginIndustrialCraft extends APEIPlugin {
         @Override
         public void setup() {
             for (MachineRecipe<ICannerBottleRecipeManager.Input, ItemStack> recipe : Recipes.cannerBottle.getRecipes()) {
-                /*if(recipe.getOutput().getItem()==find.apply("filled_tin_can"))
-                    continue;*/
                 IRecipeInput container = recipe.getInput().container, fill = recipe.getInput().fill;
                 addConversion(recipe.getOutput(), ImmutableMap.of(
                         PEIApi.getIngredient(container.getIngredient()), container.getAmount(),
@@ -244,6 +257,19 @@ public class PluginIndustrialCraft extends APEIPlugin {
                         PEIApi.getIngredient(additive.getIngredient()), additive.getAmount()
                 ));
             }
+        }
+    }
+
+    private static class UUMapper extends PEIMapper {
+        public UUMapper() {
+            super("UU Mapper", "Add support for UU-Matter(both solid and liquid)");
+        }
+
+        @Override
+        public void setup() {
+            FluidStack uu = new FluidStack(FluidName.uu_matter.getInstance(), 1000);
+            addConversion(uu, ImmutableMap.of(cobble, (int) Math.ceil(uuFactor * 1000)));
+            addRecipe(new ItemStack(misc_resource, 1, 3), uu);
         }
     }
 }

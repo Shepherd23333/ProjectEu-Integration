@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @PEIPlugin("draconicevolution")
@@ -52,8 +53,8 @@ public class PluginDraconicEvolution extends APEIPlugin {
         public void setup() {
             for (IFusionRecipe recipe : FusionRecipeAPI.getRecipes()) {
                 if (recipe instanceof SimpleFusionRecipe) {
-                    ItemStack catalyst = recipe.getRecipeCatalyst();
-                    List<Object> inputs = recipe.getRecipeIngredients();
+                    ItemStack catalyst = recipe.getRecipeCatalyst().copy();
+                    List<Object> inputs = new ArrayList<>(recipe.getRecipeIngredients());
                     inputs.add(catalyst);
                     addRecipe(recipe.getRecipeOutput(catalyst), inputs);
                 }

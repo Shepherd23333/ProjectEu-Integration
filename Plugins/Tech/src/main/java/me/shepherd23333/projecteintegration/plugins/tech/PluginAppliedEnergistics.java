@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ package me.shepherd23333.projecteintegration.plugins.tech;
 
 import appeng.api.AEApi;
 import appeng.api.config.CondenserOutput;
+import appeng.api.definitions.IDefinitions;
 import appeng.api.definitions.IMaterials;
 import appeng.api.features.IGrinderRecipe;
 import appeng.api.features.IInscriberRecipe;
@@ -34,10 +35,10 @@ import me.shepherd23333.projecte.emc.IngredientMap;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,10 +46,12 @@ import java.util.Optional;
 
 @PEIPlugin("appliedenergistics2")
 public class PluginAppliedEnergistics extends APEIPlugin {
+    static IDefinitions def = AEApi.instance().definitions();
+
     @Override
     public void setup() {
         if (AEConfig.instance().isFeatureEnabled(AEFeature.SKY_STONE)) {
-            Optional<Item> skyStone = AEApi.instance().definitions().blocks().skyStoneBlock().maybeItem();
+            Optional<Item> skyStone = def.blocks().skyStoneBlock().maybeItem();
             skyStone.ifPresent(item -> addEMC(item, 64));
         }
 
@@ -68,13 +71,19 @@ public class PluginAppliedEnergistics extends APEIPlugin {
 
         @Override
         public void setup() {
-            ItemStack cobble = new ItemStack(Blocks.COBBLESTONE);
-            AEApi.instance().definitions().materials().singularity().maybeStack(1).ifPresent(itemStack -> {
+            Optional<ItemStack> singularity = def.materials().singularity().maybeStack(1),
+                    qes = def.materials().qESingularity().maybeStack(2);
+            singularity.ifPresent(itemStack1 -> {
                 Map<Object, Integer> map = new HashMap<>();
                 map.put(cobble.copy(), CondenserOutput.SINGULARITY.requiredPower);
-                addConversion(itemStack, map);
+                addConversion(itemStack1, map);
+                qes.ifPresent(itemStack2 -> {
+                    addRecipe(itemStack2,
+                            itemStack1, OreDictionary.getOres("dustEnderPearl").get(0)
+                    );
+                });
             });
-            AEApi.instance().definitions().materials().matterBall().maybeStack(1).ifPresent(itemStack -> {
+            def.materials().matterBall().maybeStack(1).ifPresent(itemStack -> {
                 Map<Object, Integer> map = new HashMap<>();
                 map.put(cobble.copy(), CondenserOutput.MATTER_BALLS.requiredPower);
                 addConversion(itemStack, map);
@@ -89,7 +98,7 @@ public class PluginAppliedEnergistics extends APEIPlugin {
 
         @Override
         public void setup() {
-            IMaterials materials = AEApi.instance().definitions().materials();
+            IMaterials materials = def.materials();
             if (AEConfig.instance().isFeatureEnabled(AEFeature.IN_WORLD_FLUIX)) {
                 ItemStack charged_certus = materials.certusQuartzCrystalCharged().maybeStack(1).orElse(ItemStack.EMPTY);
 
@@ -100,7 +109,7 @@ public class PluginAppliedEnergistics extends APEIPlugin {
                 }
             }
             if (AEConfig.instance().isFeatureEnabled(AEFeature.IN_WORLD_PURIFICATION)) {
-                AEApi.instance().definitions().items().crystalSeed().maybeItem().ifPresent(crystal_seed -> {
+                def.items().crystalSeed().maybeItem().ifPresent(crystal_seed -> {
                     materials.purifiedCertusQuartzCrystal().maybeStack(1).ifPresent(purified_certus -> {
                         addRecipe(purified_certus, new ItemStack(crystal_seed, 1, ItemCrystalSeed.CERTUS));
                     });

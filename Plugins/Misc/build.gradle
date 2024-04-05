@@ -12,12 +12,13 @@ repositories {
 dependencies {
     //CoFH Maven
     implementation("morph.avaritia:Avaritia:1.12.2-${version_avaritia}:deobf") {
-        exclude group: '*', module: '*'
+        transitive = false
     }
 
     // CurseMaven
     implementation rfg.deobf("curse.maven:harvestcraft-221857:${curse_harvestcraft}")
     implementation rfg.deobf("curse.maven:huajiage-infinite-galaxy-359409:${curse_huajiage2}")
+    implementation rfg.deobf("curse.maven:random-things-59816:${curse_randomthing}")
     implementation rfg.deobf("curse.maven:SecurityCraft-64760:${curse_securitycraft}")
     implementation rfg.deobf("curse.maven:woot-244049:${curse_woot}")
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,10 @@ import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -115,13 +117,14 @@ public class PluginEnderIO extends APEIPlugin {
     private static class AlloySmelterMapper extends ManyToOneRecipeMapper {
         public AlloySmelterMapper() {
             super("Alloy Smelter");
+            addRecipe(Material.POWDER_TIN.getStack(), OreDictionary.getOres("ingotTin").get(0));
+            addRecipe(Material.POWDER_LAPIS.getStack(), new ItemStack(Items.DYE, 1, 4));
         }
 
         @Override
         public void setup() {
-            for (IManyToOneRecipe recipe : AlloyRecipeManager.getInstance().getRecipes()) {
+            for (IManyToOneRecipe recipe : AlloyRecipeManager.getInstance().getRecipes())
                 addRecipe(recipe);
-            }
         }
     }
 

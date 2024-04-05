@@ -19,39 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package me.shepherd23333.projecteintegration.plugins.magic;
 
-import com.blakebr0.mysticalagriculture.crafting.ReprocessorManager;
-import com.blakebr0.mysticalagriculture.crafting.ReprocessorRecipe;
-import com.blakebr0.mysticalagriculture.items.ItemChunk;
-import com.blakebr0.mysticalagriculture.items.ModItems;
+package me.shepherd23333.projecteintegration.plugins.tech;
+
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import sonar.fluxnetworks.FluxConfig;
+import sonar.fluxnetworks.common.registry.RegistryItems;
 
-@PEIPlugin("mysticalagriculture")
-public class PluginMysticalAgriculture extends APEIPlugin {
+@PEIPlugin("fluxnetworks")
+public class PluginFluxNetwork extends APEIPlugin {
     @Override
     public void setup() {
-        addEMC("essenceInferium", 32);
-        addEMC("essenceSupremium", 32 * 256);
-        addEMC("shardProsperity", 64);
-        addEMC(ModItems.itemFertilizedEssence, 96);
-        addEMC(ItemChunk.itemTier1MobChunk, 1024);
-
-        addMapper(new SeedProcessorMapper());
+        addMapper(new FluxMapper());
     }
 
-    private static class SeedProcessorMapper extends PEIMapper {
-        public SeedProcessorMapper() {
-            super("Seed Processor");
+    private static class FluxMapper extends PEIMapper {
+        public FluxMapper() {
+            super("Flux", "Add support for flux dust crafting");
         }
 
         @Override
         public void setup() {
-            for (ReprocessorRecipe recipe : ReprocessorManager.getRecipes()) {
-                addRecipe(recipe.getOutput(), recipe.getInput()); //TODO: Improve, to support ore dict and other
-            }
+            if (FluxConfig.enableFluxRecipe || FluxConfig.enableOldRecipe)
+                addRecipe(new ItemStack(RegistryItems.FLUX), new ItemStack(Items.REDSTONE));
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,9 +55,11 @@ public abstract class APEIPlugin implements Callable<List<PEIMapper>> {
      */
     public APEIPlugin() {
         PEIPlugin plugin = getClass().getAnnotation(PEIPlugin.class);
-        if (plugin == null) throw new IllegalStateException("Plugins must have a @PEIPlugin annotation");
+        if (plugin == null)
+            throw new IllegalStateException("Plugins must have a @PEIPlugin annotation");
         modid = plugin.value();
-        if (modid.trim().isEmpty()) throw new IllegalArgumentException("@PEIPlugin modid may not be empty");
+        if (modid.trim().isEmpty())
+            throw new IllegalArgumentException("@PEIPlugin modid may not be empty");
         name = plugin.name().isEmpty() ? modid : plugin.name();
         category = plugin.config().isEmpty() ? modid : plugin.config();
         config = PEIApi.getInstance().CONFIG;
@@ -82,9 +84,8 @@ public abstract class APEIPlugin implements Callable<List<PEIMapper>> {
      */
     protected void addEMC(String ore, int base_emc, String extra) {
         int emc = config.getInt("emc_ore_" + ore, category, base_emc, -1, Integer.MAX_VALUE, extra);
-        for (ItemStack item : OreDictionary.getOres(ore)) {
+        for (ItemStack item : OreDictionary.getOres(ore))
             setEMC(item, emc);
-        }
     }
 
     /**
@@ -96,9 +97,8 @@ public abstract class APEIPlugin implements Callable<List<PEIMapper>> {
      */
     protected void addEMC(String ore, int base_emc) {
         int emc = config.getInt("emc_ore_" + ore, category, base_emc, -1, Integer.MAX_VALUE, "EMC Value for all items in oredict '" + ore + '\'');
-        for (ItemStack item : OreDictionary.getOres(ore)) {
+        for (ItemStack item : OreDictionary.getOres(ore))
             setEMC(item, emc);
-        }
     }
 
     /**
@@ -191,12 +191,10 @@ public abstract class APEIPlugin implements Callable<List<PEIMapper>> {
      * @param mapper The mapper to be added to the {@link PEIApi}
      */
     protected void addMapper(PEIMapper mapper) {
-        if (mapper.name.trim().isEmpty()) {
+        if (mapper.name.trim().isEmpty())
             throw new IllegalArgumentException(String.format("Mapper '%s' name may not be empty", mapper.getClass().getCanonicalName()));
-        }
-        if (config.getBoolean(ConfigHelper.getMapperName(mapper), category, !mapper.disabled_by_default, mapper.desc)) {
+        if (config.getBoolean(ConfigHelper.getMapperName(mapper), category, !mapper.disabled_by_default, mapper.desc))
             MAPPERS.add(mapper);
-        }
     }
 
     /**

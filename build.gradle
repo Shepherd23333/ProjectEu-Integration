@@ -71,7 +71,7 @@ minecraft {
     // Add any properties you want to swap out for a dynamic value at build time here
     // Any properties here will be added to a class at build time, the name can be configured below
     // Example:
-    injectedTags.put('VERSION', project.version)
+    // injectedTags.put('VERSION', project.version)
     // injectedTags.put('MOD_ID', project.archives_base_name)
 }
 
@@ -130,8 +130,10 @@ dependencies {
     compileOnly rfg.deobf("CraftTweaker2:ZenScript:1.12-${version_crt}")
     compileOnly rfg.deobf("CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${version_crt}")
 
+    runtimeOnly "curse.maven:industrialcraft-242638:3838713"
     runtimeOnly rfg.deobf("curse.maven:had-enough-items-557549:${curse_hei}")
-    runtimeOnly rfg.deobf("curse.maven:Mekanism-268560:${curse_mekanism}")
+    runtimeOnly rfg.deobf("curse.maven:codechickenlib-242818:${curse_ccl}")
+    runtimeOnly rfg.deobf("curse.maven:GregTechCEU-557242:${curse_gregtechceu}")
 
     if (project.use_mixins.toBoolean()) {
         // Change your mixins refmap name here:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2024 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,9 +45,7 @@ public final class ApplyOnlyIf {
         String mod_version = modContainer.getVersion();
         if (!StringUtils.isEmpty(onlyIf.version())) {
             VersionRange onlyifRange = VersionParser.parseRange(onlyIf.version());
-            if (new DefaultArtifactVersion(modContainer.getModId(), onlyifRange).containsVersion(modContainer.getProcessedVersion())) {
-                return false;
-            }
+            return new DefaultArtifactVersion(modContainer.getModId(), onlyifRange).containsVersion(modContainer.getProcessedVersion());
         }
         if (!StringUtils.isEmpty(onlyIf.versionStartsWith().trim())) {
             if (!mod_version.startsWith(onlyIf.versionStartsWith())) {
