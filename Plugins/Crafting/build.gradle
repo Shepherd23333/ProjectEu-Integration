@@ -10,7 +10,7 @@ dependencies {
     implementation rfg.deobf("curse.maven:ArmorPlus-237366:${curse_armorplus}")
     implementation rfg.deobf("curse.maven:ArtisanWorktables-284351:${curse_artisanworktables}")
     implementation rfg.deobf("curse.maven:ExtendedCrafting-398267:${curse_extendedcrafting}")
-    implementation rfg.deobf("curse.maven:modular-machinery-270790:${curse_modularmachinery}")
+    implementation rfg.deobf("curse.maven:mmce-817377:${curse_mmce}")
 
     // TTerrag Maven
     implementation rfg.deobf("team.chisel:Chisel:MC1.12.2-${version_chisel}")

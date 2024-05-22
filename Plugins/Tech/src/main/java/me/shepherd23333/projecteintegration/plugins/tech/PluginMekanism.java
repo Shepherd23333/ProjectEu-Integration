@@ -22,9 +22,6 @@
 package me.shepherd23333.projecteintegration.plugins.tech;
 
 import com.google.common.collect.ImmutableMap;
-import me.shepherd23333.projecte.api.ProjectEAPI;
-import me.shepherd23333.projecte.api.proxy.IConversionProxy;
-import me.shepherd23333.projecte.emc.IngredientMap;
 import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
@@ -45,6 +42,9 @@ import mekanism.common.recipe.inputs.PressurizedInput;
 import mekanism.common.recipe.machines.*;
 import mekanism.common.recipe.outputs.ChanceOutput;
 import mekanism.common.recipe.outputs.PressurizedOutput;
+import moze_intel.projecte.api.ProjectEAPI;
+import moze_intel.projecte.api.proxy.IConversionProxy;
+import moze_intel.projecte.emc.IngredientMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 

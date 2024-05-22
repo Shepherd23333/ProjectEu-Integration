@@ -23,15 +23,15 @@ package me.shepherd23333.projecteintegration.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import me.shepherd23333.projecte.api.ProjectEAPI;
-import me.shepherd23333.projecte.api.proxy.IConversionProxy;
-import me.shepherd23333.projecte.api.proxy.IEMCProxy;
 import me.shepherd23333.projecteintegration.Tags;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.utils.ASMHandler;
 import me.shepherd23333.projecteintegration.api.utils.IngredientHandler;
+import moze_intel.projecte.api.ProjectEAPI;
+import moze_intel.projecte.api.proxy.IConversionProxy;
+import moze_intel.projecte.api.proxy.IEMCProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;

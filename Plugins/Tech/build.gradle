@@ -39,7 +39,7 @@ dependencies {
 
     // CurseMaven
     implementation rfg.deobf("curse.maven:ActuallyAdditions-228404:${curse_actuallyadditions}")
-    implementation rfg.deobf("curse.maven:appliedenergistics2-223794:${curse_appliedenergistics}")
+    implementation rfg.deobf("curse.maven:ae2uel-570458:${curse_ae2uel}")
     implementation rfg.deobf("curse.maven:calculator-225104:${curse_calculator}")
     implementation rfg.deobf("curse.maven:compactmachines3-224218:${curse_compactmachines}")
     implementation rfg.deobf("curse.maven:environmental-tech-245453:${curse_envtech}")

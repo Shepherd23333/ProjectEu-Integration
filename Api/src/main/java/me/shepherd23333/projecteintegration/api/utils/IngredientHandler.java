@@ -21,10 +21,10 @@
  */
 package me.shepherd23333.projecteintegration.api.utils;
 
-import me.shepherd23333.projecte.emc.IngredientMap;
 import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.internal.lists.InputList;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
+import moze_intel.projecte.emc.IngredientMap;
 import org.apache.commons.lang3.ClassUtils;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.Map;
  * A utility class to handle recipe ingredients.
  * <p>
  * Uses a {@link ArrayList} of {@link Handler} to convert {@link Object} to ingredients that can be converted into a {@link IngredientMap}
- * to be used for inputs in {@link me.shepherd23333.projecte.api.proxy.IConversionProxy#addConversion(int, Object, Map)}.
+ * to be used for inputs in {@link moze_intel.projecte.api.proxy.IConversionProxy#addConversion(int, Object, Map)}.
  * <p>
  * To register a handler just use {@link #registerHandler(Handler)}.
  */
@@ -47,7 +47,7 @@ public final class IngredientHandler {
 
     /**
      * Create an IngredientHandler that will convert objects into something that
-     * {@link me.shepherd23333.projecte.api.proxy.IConversionProxy#addConversion(int, Object, Map)} can use to add conversions.
+     * {@link moze_intel.projecte.api.proxy.IConversionProxy#addConversion(int, Object, Map)} can use to add conversions.
      * <p>
      * Uses {@link Handler}s for conversion.
      */

@@ -8,6 +8,8 @@ A fork of [ProjectE-Integration](https://github.com/TagnumElite/ProjectE-Integra
 
 - [Extended Crafting](https://www.curseforge.com/minecraft/mc-mods/extended-crafting-nomifactory-edition): Changed to
   nomi-edition
+- [Modular Machinery](https://www.curseforge.com/minecraft/mc-mods/modularmachinery-community-edition): Changed to
+  community edition
 
 ### Magic:  
 

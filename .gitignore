@@ -282,4 +282,3 @@ gradle-app.setting
 .idea/modules/Plugins/*/ProjectEu-Integration.Plugins.*.test.iml
 .idea/runConfigurations/run*.xml
 !**/libs/*.jar
-/libs/

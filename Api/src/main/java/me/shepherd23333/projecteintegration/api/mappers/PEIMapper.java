@@ -22,12 +22,12 @@
 
 package me.shepherd23333.projecteintegration.api.mappers;
 
-import me.shepherd23333.projecte.api.ProjectEAPI;
-import me.shepherd23333.projecte.api.proxy.IConversionProxy;
-import me.shepherd23333.projecte.emc.IngredientMap;
 import me.shepherd23333.projecteintegration.api.PEIApi;
 import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
 import me.shepherd23333.projecteintegration.api.utils.IngredientHandler;
+import moze_intel.projecte.api.ProjectEAPI;
+import moze_intel.projecte.api.proxy.IConversionProxy;
+import moze_intel.projecte.emc.IngredientMap;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
