@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -140,23 +140,7 @@ public class PEIApi {
      * @return Returns {@code null} if the Ingredient is empty or null
      */
     public static Object getIngredient(Ingredient ingredient) {
-        if (ingredient == null || ingredient == Ingredient.EMPTY)
-            return null;
-
-        if (INGREDIENT_CACHE.containsKey(ingredient))
-            return INGREDIENT_CACHE.get(ingredient);
-
-        Object obj = new Object();
-
-        for (ItemStack stack : ingredient.getMatchingStacks()) {
-            if (stack == null || stack.isEmpty())
-                continue;
-
-            conversion_proxy.addConversion(1, obj, ImmutableMap.of(stack, 1));
-        }
-
-        INGREDIENT_CACHE.put(ingredient, obj);
-        return obj;
+        return conversion_proxy.getIngredient(ingredient);
     }
 
     public static Object getList(List<?> list) {
@@ -170,10 +154,12 @@ public class PEIApi {
         Object obj = new Object();
 
         for (Object object : list) {
-            if (object == null) continue;
+            if (object == null)
+                continue;
 
             SizedObject<Object> input = IngredientHandler.convert(object);
-            if (input.object == null || input.amount == 0) continue;
+            if (input.object == null || input.amount == 0)
+                continue;
 
             conversion_proxy.addConversion(1, obj, ImmutableMap.of(input.object, input.amount));
         }
@@ -305,7 +291,8 @@ public class PEIApi {
      *
      */
     public void setupMappers() {
-        if (LOADED) return;
+        if (LOADED)
+            return;
         LOGGER.info("Starting Phase: Setting Up Mappers for {} plugins", PLUGINS.size());
         final long startTime = System.currentTimeMillis();
 

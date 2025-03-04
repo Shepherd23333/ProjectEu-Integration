@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,26 @@ package me.shepherd23333.projecteintegration.plugins.tech;
 import cofh.thermalexpansion.util.managers.machine.*;
 import cofh.thermalfoundation.init.TFFluids;
 import cofh.thermalfoundation.item.ItemMaterial;
+import com.google.common.collect.Sets;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @PEIPlugin("thermalexpansion")
 public class PluginThermalExpansion extends APEIPlugin {
     @Override
     public void setup() {
-        addEMC("dustSaltpeter", 32);
+        //addEMC("dustSaltpeter", 32);
         addEMC(ItemMaterial.globRosin, 1);
         addEMC(ItemMaterial.globTar, 150);
-        addEMC("crystalSlagRich", 32);
         addEMC("crystalCinnabar", 32);
         addEMC("crystalCrudeOil", 256);
         addEMC("crystalRedstone", 160);
@@ -48,7 +53,6 @@ public class PluginThermalExpansion extends APEIPlugin {
         addEMC("rodBlitz", 1536);
         addEMC("rodBasalz", 1536);
 
-        //addMapper(new BrewerMapper());
         addMapper(new CentrifugeMapper());
         addMapper(new ChargerMapper());
         addMapper(new CompactorMapper());
@@ -56,26 +60,12 @@ public class PluginThermalExpansion extends APEIPlugin {
         addMapper(new EnchanterMapper());
         addMapper(new ExtruderMapper());
         addMapper(new FurnaceMapper());
-        addMapper(new InsolatorMapper());
         addMapper(new PrecipitatorMapper());
         addMapper(new PulverizerMapper());
         addMapper(new RefineryMapper());
         addMapper(new SawmillMapper());
         addMapper(new SmelterMapper());
         addMapper(new TransposerMapper());
-    }
-
-    private static class BrewerMapper extends PEIMapper {
-        public BrewerMapper() {
-            super("Brewer");
-        }
-
-        @Override
-        public void setup() {
-            for (BrewerManager.BrewerRecipe recipe : BrewerManager.getRecipeList()) {
-                addRecipe(recipe.getOutputFluid(), recipe.getInput(), recipe.getInputFluid());
-            }
-        }
     }
 
     private static class CentrifugeMapper extends PEIMapper {
@@ -86,10 +76,24 @@ public class PluginThermalExpansion extends APEIPlugin {
         @Override
         public void setup() {
             for (CentrifugeManager.CentrifugeRecipe recipe : CentrifugeManager.getRecipeList()) {
-                if (recipe.getFluid() == null)
-                    continue; // TODO: Do this properly
-
-                addRecipe(recipe.getFluid(), recipe.getInput());
+                ArrayList<Object> outputs = new ArrayList<>();
+                List<ItemStack> outs = recipe.getOutput();
+                List<Integer> ch = recipe.getChance();
+                for (int i = 0; i < outs.size(); i++) {
+                    ItemStack out = outs.get(i).copy();
+                    out.setCount(out.getCount() * ch.get(i));
+                    outputs.add(out);
+                }
+                if (recipe.getFluid() != null) {
+                    FluidStack f = recipe.getFluid().copy();
+                    f.amount *= 100;
+                    outputs.add(f);
+                }
+                if (!outputs.isEmpty()) {
+                    ItemStack in = recipe.getInput().copy();
+                    in.setCount(in.getCount() * 100);
+                    addRecipe(outputs, in);
+                }
             }
         }
     }
@@ -183,36 +187,12 @@ public class PluginThermalExpansion extends APEIPlugin {
             }
 
             for (FurnaceManager.FurnaceRecipe recipe : FurnaceManager.getRecipeList(true)) {
-                addRecipe(recipe.getOutput(), recipe.getInput());
-
-                if (recipe.getCreosote() > 0)
-                    addRecipe(new FluidStack(TFFluids.fluidCreosote, recipe.getCreosote()), recipe.getInput());
-            }
-        }
-    }
-
-    private static class InsolatorMapper extends PEIMapper {
-        public InsolatorMapper() {
-            super("Insolator");
-        }
-
-        @Override
-        public void setup() {
-            for (InsolatorManager.InsolatorRecipe recipe : InsolatorManager.getRecipeList()) {
-                if (recipe.getType() == InsolatorManager.Type.TREE)
-                    continue;
-
-                if (recipe.hasFertilizer())
-                    continue; // Most, if not all, recipes with fertilizer is dupe recipes, ignore those
-
                 ArrayList<Object> outputs = new ArrayList<>();
-                outputs.add(recipe.getPrimaryOutput());
+                outputs.add(recipe.getOutput());
+                if (recipe.getCreosote() > 0)
+                    outputs.add(new FluidStack(TFFluids.fluidCreosote, recipe.getCreosote()));
 
-                if (recipe.getSecondaryOutputChance() >= 100) {
-                    outputs.add(recipe.getSecondaryOutput());
-                }
-
-                addRecipe(outputs, recipe.getPrimaryInput(), recipe.getSecondaryInput());
+                addRecipe(outputs, recipe.getInput());
             }
         }
     }
@@ -239,13 +219,15 @@ public class PluginThermalExpansion extends APEIPlugin {
         public void setup() {
             for (PulverizerManager.PulverizerRecipe recipe : PulverizerManager.getRecipeList()) {
                 ArrayList<Object> outputs = new ArrayList<>();
-                outputs.add(recipe.getPrimaryOutput());
+                ItemStack pri = recipe.getPrimaryOutput().copy(), sec = recipe.getSecondaryOutput().copy(),
+                        in = recipe.getInput().copy();
+                pri.setCount(pri.getCount() * 100);
+                sec.setCount(sec.getCount() * recipe.getSecondaryOutputChance());
+                in.setCount(in.getCount() * 100);
+                outputs.add(pri);
+                outputs.add(sec);
 
-                if (recipe.getSecondaryOutputChance() >= 100) {
-                    outputs.add(recipe.getSecondaryOutput());
-                }
-
-                addRecipe(outputs, recipe.getInput());
+                addRecipe(outputs, in);
             }
         }
     }
@@ -258,14 +240,18 @@ public class PluginThermalExpansion extends APEIPlugin {
         @Override
         public void setup() {
             for (RefineryManager.RefineryRecipe recipe : RefineryManager.getRecipeList()) {
-                if (recipe.getChance() != 100)
-                    continue;
-
                 ArrayList<Object> outputs = new ArrayList<>();
-                outputs.add(recipe.getOutputFluid());
-                outputs.add(recipe.getOutputItem());
+                FluidStack f = recipe.getOutputFluid().copy();
+                f.amount *= 100;
+                outputs.add(f);
+                ItemStack out = recipe.getOutputItem().copy();
+                out.setCount(out.getCount() * recipe.getChance());
+                outputs.add(out);
 
-                addRecipe(outputs, recipe.getInput());
+                FluidStack in = recipe.getInput().copy();
+                in.amount *= 100;
+
+                addRecipe(outputs, in);
             }
         }
     }
@@ -279,13 +265,15 @@ public class PluginThermalExpansion extends APEIPlugin {
         public void setup() {
             for (SawmillManager.SawmillRecipe recipe : SawmillManager.getRecipeList()) {
                 ArrayList<Object> outputs = new ArrayList<>();
-                outputs.add(recipe.getPrimaryOutput());
+                ItemStack pri = recipe.getPrimaryOutput().copy(), sec = recipe.getSecondaryOutput().copy(),
+                        in = recipe.getInput().copy();
+                pri.setCount(pri.getCount() * 100);
+                sec.setCount(sec.getCount() * Math.min(100, recipe.getSecondaryOutputChance()));
+                in.setCount(in.getCount() * 100);
+                outputs.add(pri);
+                outputs.add(sec);
 
-                if (recipe.getSecondaryOutputChance() >= 100) {
-                    outputs.add(recipe.getSecondaryOutput());
-                }
-
-                addRecipe(outputs, recipe.getInput());
+                addRecipe(outputs, in);
             }
         }
     }
@@ -299,13 +287,16 @@ public class PluginThermalExpansion extends APEIPlugin {
         public void setup() {
             for (SmelterManager.SmelterRecipe recipe : SmelterManager.getRecipeList()) {
                 ArrayList<Object> outputs = new ArrayList<>();
-                outputs.add(recipe.getPrimaryOutput());
+                ItemStack pri = recipe.getPrimaryOutput().copy(), sec = recipe.getSecondaryOutput().copy(),
+                        in1 = recipe.getPrimaryInput().copy(), in2 = recipe.getSecondaryInput().copy();
+                pri.setCount(pri.getCount() * 100);
+                sec.setCount(sec.getCount() * recipe.getSecondaryOutputChance());
+                outputs.add(pri);
+                outputs.add(sec);
+                in1.setCount(in1.getCount() * 100);
+                in2.setCount(in2.getCount() * 100);
 
-                if (recipe.getSecondaryOutputChance() >= 100) {
-                    outputs.add(recipe.getSecondaryOutput());
-                }
-
-                addRecipe(outputs, recipe.getPrimaryInput(), recipe.getSecondaryInput());
+                addRecipe(outputs, in1, in2);
             }
         }
     }
@@ -317,12 +308,22 @@ public class PluginThermalExpansion extends APEIPlugin {
 
         @Override
         public void setup() {
+            Set<Item> blacklist = Sets.newHashSet(Items.ARROW, Items.GLASS_BOTTLE);
             for (TransposerManager.TransposerRecipe recipe : TransposerManager.getExtractRecipeList()) {
-                addRecipe(recipe.getFluid(), recipe.getInput()); // TODO: Make sure, this doesn't contain the bucket
+                ArrayList<Object> outputs = new ArrayList<>();
+                outputs.add(recipe.getFluid());
+                ItemStack out = recipe.getOutput();
+                if (blacklist.contains(out.getItem()))
+                    continue;
+                outputs.add(out);
+                addRecipe(outputs, recipe.getInput());
             }
 
             for (TransposerManager.TransposerRecipe recipe : TransposerManager.getFillRecipeList()) {
-                addRecipe(recipe.getOutput(), recipe.getInput(), recipe.getFluid());
+                ItemStack in = recipe.getInput();
+                if (blacklist.contains(in.getItem()))
+                    continue;
+                addRecipe(recipe.getOutput(), in, recipe.getFluid());
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ import java.util.function.Function;
 @OnlyIf(versionEndsWith = "-ex112")
 public class PluginIndustrialCraft extends APEIPlugin {
     public static final float uuFactor = ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor");
-    private static Function<String, Item> find = reg -> ForgeRegistries.ITEMS.getValue(new ResourceLocation("ic2", reg));
+    private static final Function<String, Item> find = reg -> ForgeRegistries.ITEMS.getValue(new ResourceLocation("ic2", reg));
     static Item crops = find.apply("crop_res");
     static Item dust = find.apply("dust");
     static Item misc_resource = find.apply("misc_resource");
@@ -88,7 +88,7 @@ public class PluginIndustrialCraft extends APEIPlugin {
 
     private static class misc extends PEIMapper {
         public misc() {
-            super("Misc", "Add support for resouces and in-world crafting");
+            super("Misc", "Add support for resources and in-world crafting");
         }
 
         @Override
@@ -151,32 +151,15 @@ public class PluginIndustrialCraft extends APEIPlugin {
         @Override
         public void setup() {
             for (MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe : manager.getRecipes()) {
-                //TODO: Multi-output Improvement
-                if (recipe.getOutput().size() >= 1) {
-                    ItemStack output = recipe.getOutput().stream().findFirst().orElse(ItemStack.EMPTY);
-                    if (output.isEmpty())
-                        continue;
+                if (!recipe.getOutput().isEmpty()) {
+                    ArrayList<Object> output = new ArrayList<>(recipe.getOutput());
                     PEIApi.debugLog("IC2 Recipe: {} from {}*{}", output, recipe.getInput().getInputs(),
                             recipe.getInput().getAmount());
                     addConversion(output,
-                            ImmutableMap.of(PEIApi.getIngredient(recipe.getInput().getIngredient()), recipe.getInput().getAmount())
+                            ImmutableMap.of(recipe.getInput().getIngredient(), recipe.getInput().getAmount())
                     );
                 }
             }
-        }
-    }
-
-    private static class MachineMapper extends PEIMapper {
-        private final IMachineRecipeManager<ItemStack, ItemStack, ItemStack> manager;
-
-        public MachineMapper(IMachineRecipeManager<ItemStack, ItemStack, ItemStack> manager, String name) {
-            super(name);
-            this.manager = manager;
-        }
-
-        @Override
-        public void setup() {
-            manager.getRecipes();
         }
     }
 
@@ -232,8 +215,8 @@ public class PluginIndustrialCraft extends APEIPlugin {
             for (MachineRecipe<ICannerBottleRecipeManager.Input, ItemStack> recipe : Recipes.cannerBottle.getRecipes()) {
                 IRecipeInput container = recipe.getInput().container, fill = recipe.getInput().fill;
                 addConversion(recipe.getOutput(), ImmutableMap.of(
-                        PEIApi.getIngredient(container.getIngredient()), container.getAmount(),
-                        PEIApi.getIngredient(fill.getIngredient()), fill.getAmount()
+                        container.getIngredient(), container.getAmount(),
+                        fill.getIngredient(), fill.getAmount()
                 ));
             }
         }
@@ -254,7 +237,7 @@ public class PluginIndustrialCraft extends APEIPlugin {
                 IRecipeInput additive = recipe.getInput().additive;
                 addConversion(recipe.getOutput(), ImmutableMap.of(
                         fluid.copy(), 1,
-                        PEIApi.getIngredient(additive.getIngredient()), additive.getAmount()
+                        additive.getIngredient(), additive.getAmount()
                 ));
             }
         }

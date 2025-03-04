@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +101,7 @@ public class PluginPamsHarvestCraft extends APEIPlugin {
                         }
                     }
 
-                    addRecipe(Arrays.asList(outputs), input);
+                    addRecipe(Arrays.asList((Object[]) outputs), input);
                 }
             } catch (Exception e) {
                 PEIApi.LOGGER.error("Failed to get HarvestCraft machine '{}' recipes: {}", name, e);

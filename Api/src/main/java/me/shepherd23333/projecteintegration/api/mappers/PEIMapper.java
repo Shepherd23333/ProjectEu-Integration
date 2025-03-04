@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.ClassUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +114,7 @@ public abstract class PEIMapper {
             if (ingredient == Ingredient.EMPTY)
                 continue;
 
-            ingredients.addIngredient(PEIApi.getIngredient(ingredient), 1);
+            ingredients.addIngredient(ingredient, 1);
         }
 
         addConversion(output, ingredients.getMap());
@@ -205,33 +204,10 @@ public abstract class PEIMapper {
 
         for (Object out : output) {
             if (Objects.isNull(out)) {
-                PEIApi.debugLog("Null Output Item");
-                continue;
+                PEIApi.debugLog("Null Output Object");
+                return;
             }
-            if (out instanceof ItemStack) {
-                ItemStack item = (ItemStack) out;
-                if (item.isEmpty()) {
-                    PEIApi.debugLog("Empty ItemStack Output");
-                    continue;
-                }
-                PEIApi.debugLog("ItemStack Output: {}", out);
-                out_ing.addIngredient(out, item.getCount());
-            } else if (out instanceof FluidStack) {
-                FluidStack fluid = (FluidStack) out;
-                if (fluid.amount <= 0) {
-                    PEIApi.debugLog("Empty FluidStack Output");
-                    continue;
-                }
-                PEIApi.debugLog("FluidStack Output: {}", out);
-                out_ing.addIngredient(out, fluid.amount);
-            } else if (out instanceof Item || out instanceof Block || out.getClass().equals(Object.class)) {
-                PEIApi.debugLog("Output: Object||Item||Block");
-                out_ing.addIngredient(out, 1);
-            } else if (out instanceof SizedObject) {
-                // TODO: This obviously
-            } else {
-                PEIApi.LOGGER.warn("Invalid Multi-Output item: {}:({})", out, out.getClass());
-            }
+            dealOutput(out, out_ing);
         }
 
         final Map<Object, Integer> outputs = out_ing.getMap();
@@ -239,27 +215,38 @@ public abstract class PEIMapper {
         if (outputs.isEmpty()) {
             PEIApi.LOGGER.warn("Multi-Output: Empty outputs");
             return;
-        } else if (outputs.size() == 1) {
-            Map.Entry<Object, Integer> out = outputs.entrySet().iterator().next();
-            addConversion(out.getValue(), out.getKey(), inputs);
-            PEIApi.debugLog("Multi-Output: Only one output {}*{}", out.getKey(), out.getValue());
-            return;
         }
 
-        int output_count = 0;
-        for (int count : outputs.values()) {
-            output_count += count;
-        }
-        Object obj = new Object();
-        addConversion(output_count, obj, inputs);
+        addConversion(outputs, inputs);
 
-        for (Map.Entry<Object, Integer> out : outputs.entrySet()) {
-            HashMap<Object, Integer> ing = new HashMap<>();
-            ing.put(obj, out.getValue());
-            PEIApi.debugLog("Adding multi-output: {}*{}", out.getKey(), out.getValue());
-            addConversion(out.getValue(), out.getKey(), ing);
-        }
         PEIApi.debugLog("Multi-Output Took {}ms", (System.currentTimeMillis() - startTime));
+    }
+
+    protected void dealOutput(Object out, IngredientMap<Object> out_ing) {
+        if (out instanceof ItemStack) {
+            ItemStack item = (ItemStack) out;
+            if (item.isEmpty()) {
+                PEIApi.debugLog("Empty ItemStack Output");
+                return;
+            }
+            PEIApi.debugLog("ItemStack Output: {}", out);
+            out_ing.addIngredient(out, item.getCount());
+        } else if (out instanceof FluidStack) {
+            FluidStack fluid = (FluidStack) out;
+            if (fluid.amount <= 0) {
+                PEIApi.debugLog("Empty FluidStack Output");
+                return;
+            }
+            PEIApi.debugLog("FluidStack Output: {}", out);
+            out_ing.addIngredient(out, fluid.amount);
+        } else if (out instanceof Item || out instanceof Block || out.getClass().equals(Object.class)) {
+            PEIApi.debugLog("Output: Object||Item||Block");
+            out_ing.addIngredient(out, 1);
+        } else if (out instanceof SizedObject) {
+            // TODO: This obviously
+        } else {
+            PEIApi.LOGGER.warn("Invalid Multi-Output item: {}:({})", out, out.getClass());
+        }
     }
 
     /**
@@ -300,21 +287,22 @@ public abstract class PEIMapper {
      * @param input         {@code Map<Object, Integer>} The ingredient map
      */
     protected void addConversion(int output_amount, Object output, Map<Object, Integer> input) {
-        if (output_amount <= 0 || output == null || input == null || input.isEmpty()) {
-            Object output_l = output;
-            if (output instanceof FluidStack)
-                output_l = ((FluidStack) output).getFluid().getName();
+        Map<Object, Integer> out = new HashMap<>();
+        out.put(output, output_amount);
+        addConversion(out, input);
+    }
 
-            PEIApi.LOGGER.warn("Invalid Conversion: [{} ({})]*{} from {}", output_l,
-                    ClassUtils.getPackageCanonicalName(output != null ? output.getClass() : null), output_amount, input);
+    protected void addConversion(Map<Object, Integer> output, Map<Object, Integer> input) {
+        if (output == null || output.values().stream().anyMatch(value -> value <= 0) || input == null || input.isEmpty()) {
+            PEIApi.LOGGER.warn("Invalid Conversion: {} from {}", output, input);
             return;
         }
 
         try {
-            conversion_proxy.addConversion(output_amount, output, input);
+            conversion_proxy.addConversion(output, input);
             PEIApi.mapped_conversions++;
         } catch (Exception e) {
-            PEIApi.LOGGER.error("Failed to add conversion: {}*{} from {}; {}", output, output_amount, input, e);
+            PEIApi.LOGGER.error("Failed to add conversion: {} from {}; {}", output, input, e);
         }
     }
 }

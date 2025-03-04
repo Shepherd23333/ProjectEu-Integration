@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,28 +22,47 @@
 
 package me.shepherd23333.projecteintegration.plugins.duplicate;
 
+import com.google.common.collect.ImmutableMap;
+import gregtech.api.GTValues;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.chance.output.ChancedOutputLogic;
 import gregtech.api.recipes.chance.output.impl.ChancedFluidOutput;
 import gregtech.api.recipes.chance.output.impl.ChancedItemOutput;
 import gregtech.api.recipes.ingredients.GTRecipeInput;
-import me.shepherd23333.projecteintegration.api.internal.sized.SizedObject;
+import gregtech.api.unification.material.Materials;
+import gregtech.common.items.MetaItems;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
 import me.shepherd23333.projecteintegration.api.plugin.OnlyIf;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @PEIPlugin("gregtech")
 @OnlyIf(version = "[2.8,)")
 public class PluginGregTechCEU extends APEIPlugin {
+    static boolean boostMAX;
+    static int boost = boostMAX ? GTValues.UV : GTValues.MAX;
+
     @Override
     public void setup() {
+        boostMAX = config.getBoolean("isBoostMAX", category, false,
+                "Whether to calculate the chance of chanced output at MAX tier, otherwise at UV tier.");
+
+        addEMC(MetaItems.STICKY_RESIN.getStackForm(), 32);
+        addEMC("Natural Gas(1mb)", Materials.NaturalGas.getFluid(), 100);
+        addEMC("Oil(1mb)", Materials.Oil.getFluid(), 100);
+        addEMC("Light Oil(1mb)", Materials.OilLight.getFluid(), 100);
+        addEMC("Heavy Oil(1mb)", Materials.OilHeavy.getFluid(), 100);
+        addEMC("Raw Oil(1mb)", Materials.RawOil.getFluid(), 100);
+
         for (RecipeMap<?> map : RecipeMap.getRecipeMaps()) {
             addMapper(new RecipeMapper(map));
         }
@@ -51,7 +70,7 @@ public class PluginGregTechCEU extends APEIPlugin {
 
     private static class RecipeMapper extends PEIMapper {
         private final RecipeMap<?> map;
-        private int maxChance = ChancedOutputLogic.getMaxChancedValue();
+        private final int maxChance = ChancedOutputLogic.getMaxChancedValue();
 
         public RecipeMapper(RecipeMap<?> map) {
             super(map.unlocalizedName);
@@ -61,36 +80,52 @@ public class PluginGregTechCEU extends APEIPlugin {
         @Override
         public void setup() {
             for (Recipe recipe : map.getRecipeList()) {
-                ArrayList<Object> inputs = new ArrayList<>();
+                Map<Object, Integer> inputs = new HashMap<>();
                 for (GTRecipeInput input : recipe.getInputs()) {
-                    inputs.add(new SizedObject<>(input.getAmount(), Ingredient.fromStacks(input.getInputStacks())));
+                    if (input.isNonConsumable())
+                        continue;
+                    Object obj = new Object();
+                    if (input.isOreDict())
+                        obj = OreDictionary.getOreName(input.getOreDict());
+                    else
+                        for (ItemStack stack : input.getInputStacks())
+                            addConversion(1, obj, ImmutableMap.of(stack, 1));
+                    inputs.put(obj, input.getAmount() * maxChance);
                 }
-                for (GTRecipeInput fluidInput : recipe.getFluidInputs()) {
-                    inputs.add(fluidInput.getInputFluidStack());
+                for (GTRecipeInput input : recipe.getFluidInputs()) {
+                    if (input.isNonConsumable())
+                        continue;
+                    FluidStack stack = input.getInputFluidStack();
+                    inputs.put(stack, stack.amount * maxChance);
                 }
 
-                ArrayList<Object> outputs = new ArrayList<>(recipe.getOutputs());
-                outputs.addAll(recipe.getFluidOutputs());
+                List<Object> outputs = new ArrayList<>();
+                for (ItemStack stack : recipe.getOutputs()) {
+                    ItemStack i = stack.copy();
+                    i.setCount(i.getCount() * maxChance);
+                    outputs.add(i);
+                }
+                for (FluidStack stack : recipe.getFluidOutputs()) {
+                    FluidStack f = stack.copy();
+                    f.amount *= maxChance;
+                    outputs.add(f);
+                }
 
                 for (ChancedItemOutput output : recipe.getChancedOutputs().getChancedEntries()) {
-                    int mult = output.getChance() / maxChance;
-                    if (mult > 0) {
-                        ItemStack item = output.getIngredient().copy();
-                        item.setCount(item.getCount() * mult);
-                        outputs.add(item);
-                    }
+                    int mult = Math.min(maxChance, output.getChance() + boost * output.getChanceBoost());
+                    ItemStack item = output.getIngredient().copy();
+                    item.setCount(item.getCount() * mult);
+                    outputs.add(item);
                 }
 
                 for (ChancedFluidOutput output : recipe.getChancedFluidOutputs().getChancedEntries()) {
-                    int mult = output.getChance() / maxChance;
-                    if (mult > 0) {
-                        FluidStack fluid = output.getIngredient().copy();
-                        fluid.amount *= mult;
-                        outputs.add(fluid);
-                    }
+                    int mult = Math.min(maxChance, output.getChance() + boost * output.getChanceBoost());
+                    FluidStack fluid = output.getIngredient().copy();
+                    fluid.amount *= mult;
+                    outputs.add(fluid);
                 }
 
-                addRecipe(outputs, inputs.toArray());
+                addConversion(outputs, inputs);
             }
         }
     }

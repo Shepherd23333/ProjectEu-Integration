@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2020 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,8 @@ public class PEIntegration {
         DISABLED = config.getBoolean("disable", ConfigHelper.CATEGORY_GENERAL, false,
                 "Disable the mod outright? Why download it though?");
 
-        if (DISABLED) return;
+        if (DISABLED)
+            return;
         MinecraftForge.EVENT_BUS.register(this);
 
         doUpdateCheck = config.getBoolean("update_check", ConfigHelper.CATEGORY_GENERAL, true,
@@ -85,16 +86,19 @@ public class PEIntegration {
                 "Display message in chat about any failed plugins/mappers");
 
         API = new PEIApi(config, event.getAsmData());
-        if (config.hasChanged()) config.save();
+        if (config.hasChanged())
+            config.save();
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        if (DISABLED) return;
+        if (DISABLED)
+            return;
         IngredientHandlers.registerHandlers();
         API.setupPlugins();
         versionCheck = ForgeVersion.getResult(Loader.instance().activeModContainer());
-        if (config.hasChanged()) config.save();
+        if (config.hasChanged())
+            config.save();
         PermissionAPI.registerNode(updateNotifierPerm, DefaultPermissionLevel.OP, "Should this user receive update notifications");
         PermissionAPI.registerNode(errorNotifierPerm, DefaultPermissionLevel.OP, "Should this user receive notifications about failed mappers");
     }
@@ -102,9 +106,11 @@ public class PEIntegration {
     @EventHandler
     public void serverAboutToStart(FMLServerAboutToStartEvent event) {
         // If mod is disabled, then return and skip the rest
-        if (DISABLED) return;
+        if (DISABLED)
+            return;
         API.setupMappers();
-        if (config.hasChanged()) config.save();
+        if (config.hasChanged())
+            config.save();
     }
 
     @SubscribeEvent

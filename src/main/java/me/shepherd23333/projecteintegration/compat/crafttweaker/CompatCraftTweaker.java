@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -80,11 +80,11 @@ public class CompatCraftTweaker {
 
                 if (ingredient.getItems().size() == 0 && ingredient.getLiquids().size() > 0) {
                     input = PEIApi.getList(Arrays.asList(
-                            CraftTweakerMC.getLiquidStacks(ingredient.getLiquids().toArray(new ILiquidStack[0]))));
+                            CraftTweakerMC.getLiquidStacks(ingredient.getLiquids().toArray(new ILiquidStack[0]))
+                    ));
                     CraftTweakerMC.getFluid(null);
-                } else if (ingredient.getItems().size() > 0) {
-                    input = PEIApi.getIngredient(CraftTweakerMC.getIngredient(ingredient));
-                }
+                } else if (ingredient.getItems().size() > 0)
+                    input = CraftTweakerMC.getIngredient(ingredient);
 
                 map.addIngredient(input, ingredient.getAmount());
             }
@@ -95,8 +95,6 @@ public class CompatCraftTweaker {
             } else if (fluid != null) {
                 FluidStack output = CraftTweakerMC.getLiquidStack(fluid);
                 ProjectEAPI.getConversionProxy().addConversion(output.amount, output, map.getMap());
-            } else {
-
             }
         }
 

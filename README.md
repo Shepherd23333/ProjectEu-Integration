@@ -33,5 +33,6 @@ A fork of [ProjectE-Integration](https://github.com/TagnumElite/ProjectE-Integra
 - [Industrial Craft](https://www.curseforge.com/minecraft/mc-mods/industrial-craft): Fluid/Solid Canning Machine, Matter
   Fabricator
 - [Lazy AE2](https://www.curseforge.com/minecraft/mc-mods/lazy-ae2): All Machines
+- [Mekanism](https://www.curseforge.com/minecraft/mc-mods/mekanism-ce-unofficial): Changed to MekanismCEu
 - [Thermal Expansion](https://www.curseforge.com/minecraft/mc-mods/thermal-expansion)
    

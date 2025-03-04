@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public class PluginNuclearCraftOverhauled extends APEIPlugin {
     public void setup() {
         ArrayList<AbstractRecipeHandler<? extends IRecipe>> handlers = new ArrayList<>();
 
-        Collections.addAll(handlers, NCRecipes.manufactory, NCRecipes.separator, NCRecipes.decay_hastener, NCRecipes.fuel_reprocessor, NCRecipes.alloy_furnace, NCRecipes.infuser, NCRecipes.melter, NCRecipes.supercooler, NCRecipes.electrolyzer, NCRecipes.assembler, NCRecipes.ingot_former, NCRecipes.pressurizer, NCRecipes.chemical_reactor, NCRecipes.salt_mixer, NCRecipes.crystallizer, NCRecipes.enricher, NCRecipes.extractor, NCRecipes.centrifuge, NCRecipes.rock_crusher, NCRecipes.collector, NCRecipes.decay_generator, NCRecipes.fission_moderator, NCRecipes.fission_reflector, NCRecipes.fission_irradiator, NCRecipes.pebble_fission, NCRecipes.solid_fission, NCRecipes.fission_heating, NCRecipes.salt_fission, NCRecipes.fusion, NCRecipes.coolant_heater, NCRecipes.heat_exchanger, NCRecipes.condenser, NCRecipes.turbine, NCRecipes.radiation_scrubber, NCRecipes.radiation_block_mutation, NCRecipes.radiation_block_purification);
+        Collections.addAll(handlers, NCRecipes.manufactory, NCRecipes.separator, NCRecipes.decay_hastener, NCRecipes.fuel_reprocessor, NCRecipes.alloy_furnace, NCRecipes.infuser, NCRecipes.melter, NCRecipes.supercooler, NCRecipes.electrolyzer, NCRecipes.assembler, NCRecipes.ingot_former, NCRecipes.pressurizer, NCRecipes.chemical_reactor, NCRecipes.salt_mixer, NCRecipes.crystallizer, NCRecipes.enricher, NCRecipes.extractor, NCRecipes.centrifuge, NCRecipes.rock_crusher, NCRecipes.collector, NCRecipes.decay_generator, NCRecipes.fission_moderator, NCRecipes.fission_reflector, NCRecipes.fission_irradiator, NCRecipes.pebble_fission, NCRecipes.solid_fission, NCRecipes.fission_heating, NCRecipes.salt_fission, NCRecipes.coolant_heater, NCRecipes.heat_exchanger, NCRecipes.condenser, NCRecipes.turbine, NCRecipes.radiation_scrubber, NCRecipes.radiation_block_mutation, NCRecipes.radiation_block_purification);
 
         for (AbstractRecipeHandler<? extends IRecipe> handler : handlers) {
             addMapper(new AbstractRecipeMapper(handler));
@@ -92,12 +92,8 @@ public class PluginNuclearCraftOverhauled extends APEIPlugin {
                 }
 
                 ArrayList<Object> output = new ArrayList<>();
-                item_outputs.forEach(item -> {
-                    output.addAll(item.getOutputStackList());
-                });
-                fluid_outputs.forEach(fluid -> {
-                    output.addAll(fluid.getOutputStackList());
-                });
+                item_outputs.forEach(item -> output.addAll(item.getOutputStackList()));
+                fluid_outputs.forEach(fluid -> output.addAll(fluid.getOutputStackList()));
 
                 addConversion(output, ingredients.getMap());
             }

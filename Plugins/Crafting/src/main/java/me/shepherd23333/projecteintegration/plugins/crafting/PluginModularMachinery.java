@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2024 TagnumElite
+ * Copyright (c) 2019-2025 TagnumElite
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,20 +26,20 @@ import hellfirepvp.modularmachinery.common.crafting.RecipeRegistry;
 import hellfirepvp.modularmachinery.common.crafting.helper.ComponentRequirement;
 import hellfirepvp.modularmachinery.common.crafting.requirement.RequirementFluid;
 import hellfirepvp.modularmachinery.common.crafting.requirement.RequirementItem;
-import hellfirepvp.modularmachinery.common.integration.ingredient.HybridFluid;
-import hellfirepvp.modularmachinery.common.integration.ingredient.HybridFluidGas;
 import hellfirepvp.modularmachinery.common.machine.DynamicMachine;
 import hellfirepvp.modularmachinery.common.machine.IOType;
 import hellfirepvp.modularmachinery.common.machine.MachineRegistry;
 import me.shepherd23333.projecteintegration.api.mappers.PEIMapper;
 import me.shepherd23333.projecteintegration.api.plugin.APEIPlugin;
+import me.shepherd23333.projecteintegration.api.plugin.OnlyIf;
 import me.shepherd23333.projecteintegration.api.plugin.PEIPlugin;
 import moze_intel.projecte.emc.IngredientMap;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 
 @PEIPlugin("modularmachinery")
+@OnlyIf(version = "[2.0,)")
 public class PluginModularMachinery extends APEIPlugin {
     @Override
     public void setup() {
@@ -93,13 +93,10 @@ public class PluginModularMachinery extends APEIPlugin {
                             continue;
 
                         if (requirement.getActionType() == IOType.INPUT) {
-                            HybridFluid hf = fluid_req.required;
-                            if (Loader.isModLoaded("mekanism") && hf instanceof HybridFluidGas) {
-                                //TODO
-                            } else
-                                ingredients.addIngredient(hf.asFluidStack(), hf.getAmount());
+                            FluidStack fluid = fluid_req.required;
+                            ingredients.addIngredient(fluid, fluid.amount);
                         } else
-                            outputs.add(fluid_req.required.asFluidStack());
+                            outputs.add(fluid_req.required);
                     }
                 }
 
